@@ -132,25 +132,25 @@ func (p *SteakParser) cleanPrice(rawPrice string) string {
 	// Remove excessive whitespace and newlines
 	cleaned := regexp.MustCompile(`\s+`).ReplaceAllString(rawPrice, " ")
 	cleaned = strings.TrimSpace(cleaned)
-	
+
 	// Extract the final price (usually the last occurrence of "руб.")
 	priceRegex := regexp.MustCompile(`(\d+)\s*руб\.(?:\s*за\s+.*)?$`)
 	matches := priceRegex.FindStringSubmatch(cleaned)
-	
+
 	if len(matches) > 1 {
 		return matches[1] + " руб."
 	}
-	
+
 	// Fallback: try to find any number followed by "руб."
 	fallbackRegex := regexp.MustCompile(`(\d+)\s*руб\.`)
 	allMatches := fallbackRegex.FindAllStringSubmatch(cleaned, -1)
-	
+
 	if len(allMatches) > 0 {
 		// Take the last match (usually the actual price, not the crossed-out one)
 		lastMatch := allMatches[len(allMatches)-1]
 		return lastMatch[1] + " руб."
 	}
-	
+
 	// If no price pattern found, return cleaned text
 	return cleaned
 }
@@ -159,6 +159,9 @@ func (p *SteakParser) filterTrackedSteaks(steaks []SteakItem) []SteakItem {
 	var tracked []SteakItem
 
 	for _, steak := range steaks {
+		if !steak.Available {
+			continue
+		}
 		for _, trackName := range p.config.Tracking.SteaksToTrack {
 			if strings.Contains(strings.ToLower(steak.Name), strings.ToLower(trackName)) {
 				tracked = append(tracked, steak)
