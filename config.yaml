@@ -1,0 +1,9 @@
+telegram:
+  token: "DEF"
+  chat_id: "439675746"
+
+tracking:
+  url: "https://www.bbaum.ru/catalog/steak/"
+  interval: "0 * * * *"  # every hour
+  steaks_to_track:
+    - "Фланк стейк"
