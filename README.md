@@ -71,48 +71,35 @@ Add steak names to the `steaks_to_track` list. The parser will match steaks cont
 - `github.com/robfig/cron/v3` - Cron scheduling
 - `gopkg.in/yaml.v2` - YAML configuration
 
-## Railway Deployment
+## Docker Deployment
 
-### Setup Steps
+### Build and run with Docker:
 
-1. **Create Railway account**: Go to [railway.app](https://railway.app) and sign up
-
-2. **Push code to GitHub**: Make sure your code is in a GitHub repository
-
-3. **Deploy to Railway**:
-   - Login to Railway dashboard
-   - Click "New Project"
-   - Select "Deploy from GitHub repo"
-   - Choose your repository
-   - Railway will auto-detect the Dockerfile and build
-
-4. **Set environment variables** in Railway dashboard:
-   ```
-   TELEGRAM_TOKEN=your_bot_token
-   TELEGRAM_CHAT_ID=your_chat_id
+1. **Build the Docker image**:
+   ```bash
+   docker build -t bbaum-parser .
    ```
 
-5. **Update config.yaml** to use environment variables (optional):
-   ```yaml
-   telegram:
-     token: "${TELEGRAM_TOKEN}"
-     chat_id: "${TELEGRAM_CHAT_ID}"
-   
-   tracking:
-     url: "https://www.bbaum.ru/catalog/steak/"
-     interval: "0 * * * *"
-     steaks_to_track:
-       - "Рибай"
-       - "Стриплойн"
+2. **Run the container**:
+   ```bash
+   docker run -d --name bbaum-parser bbaum-parser
    ```
 
-### Files for Railway deployment:
+3. **View logs**:
+   ```bash
+   docker logs -f bbaum-parser
+   ```
+
+4. **Stop the container**:
+   ```bash
+   docker stop bbaum-parser
+   ```
+
+### Docker files:
 - `Dockerfile` - Container configuration
-- `railway.json` - Railway-specific settings
 - `.dockerignore` - Files to exclude from Docker build
 
 ### Notes:
-- Railway provides free tier with 500 hours/month
-- App will automatically restart on crashes
-- Logs are available in Railway dashboard
-- No port configuration needed - Railway handles networking
+- Container will run the parser continuously with cron scheduling
+- All logs are output to stdout for easy monitoring
+- Container will restart automatically on crashes if run with `--restart=always`
